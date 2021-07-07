@@ -13,6 +13,7 @@
         "no-non-null-assertion": false,
         "ordered-imports": false,
         "prefer-const": true,
-        "no-import-side-effect": false
+        "no-import-side-effect": false,
+        "no-implicit-dependencies": [true, "dev", ["@src", "@util"]]
     }
 }

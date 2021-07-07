@@ -3,7 +3,7 @@
         // "module": "esnext",
         // "target": "esnext",
         "module": "commonjs",
-        "target": "ES5",
+        "target": "ES6",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
@@ -19,11 +19,17 @@
         "declaration": true,
         "declarationDir": "./dist/type",
         "lib": ["es2017", "DOM", "DOM.Iterable"],
-        "types": ["reflect-metadata", "node"],
+        "types": ["reflect-metadata", "node", "express"],
         "emitDecoratorMetadata": true,
         "downlevelIteration": true,
         "experimentalDecorators": true,
-        "moduleResolution": "Node"
+        "moduleResolution": "Node",
+        "baseUrl": ".",
+        "paths": {
+            "@srcTypes/*": ["src/types/*"],
+            "@util": ["src/util/index"],
+            "@src/*": ["src/*"]
+        }
     },
     "exclude": ["node_modules", "dist"],
     "include": ["./src"]

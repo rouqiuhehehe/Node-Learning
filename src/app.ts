@@ -1,6 +1,5 @@
 import path from 'path';
 import { Listen } from './config/server_config';
-import Ssr from './interface/ssr';
 import './interface/test-interface';
 import Watcher from './models/fs_events_launcher';
 import async from './models/serial_parallel';
@@ -42,8 +41,6 @@ async.serialSerise([
         }, 2000);
     }
 ]);
-
-new Ssr('/assets/333.html').getHtml();
 
 socketServer.listen(Listen.SOCKET_PORT);
 app.listen(Listen.PORT);

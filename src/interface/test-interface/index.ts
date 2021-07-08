@@ -1,9 +1,10 @@
+import { Status } from '@src/config/server_config';
 import ProcessRequest from '@src/models/process_request';
 import Util from '@src/util';
 import { Request, Response } from 'express';
 import path from 'path';
-import Ssr from '../ssr';
 import util from 'util';
+import Ssr from '../ssr';
 
 export default class {
     @ProcessRequest.Get('/')
@@ -25,8 +26,14 @@ export default class {
 
     @ProcessRequest.Get('/get_html')
     public getHtml(_req: Request, res: Response) {
+        // util.inspect(dom)
         new Ssr('/assets/333.html').getHtml((dom) => {
-            res.send(util.inspect(dom));
+            const domArr = dom.map((v) => (v as any).name);
+            res.send({
+                success: true,
+                status: Status.SUCCESS,
+                data: util.inspect(dom)
+            });
         });
     }
 }

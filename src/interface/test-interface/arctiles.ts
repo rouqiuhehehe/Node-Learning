@@ -35,4 +35,16 @@ export default class {
             Util.hadError(new ReferenceError(ErrorMsg.AFFECTEDROWS_ERROR), res);
         }
     }
+
+    @process_request.Post('/arctiles/:id')
+    public async insertArctile(req: Request, res: Response) {
+        const id = req.params.id;
+        const data = await Arctiles.delete(id);
+
+        if (data) {
+            res.send(Util.successSend(true));
+        } else {
+            Util.hadError(new ReferenceError(ErrorMsg.AFFECTEDROWS_ERROR), res);
+        }
+    }
 }

@@ -1,6 +1,6 @@
 import path from 'path';
 import { Listen } from './config/server_config';
-import './interface/test-interface';
+import './interface';
 import Watcher from './models/fs_events_launcher';
 import async from './models/serial_parallel';
 import app from './server';
@@ -17,7 +17,7 @@ watcher.on('fileChange', (eventname, filename) => {
     // });
 });
 
-watcher.start();
+watcher.startWatchFile();
 
 // 串行多函数
 async.serialSerise([

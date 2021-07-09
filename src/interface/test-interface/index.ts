@@ -1,4 +1,5 @@
 import { Status } from '@src/config/server_config';
+import Watcher from '@src/models/fs_events_launcher';
 import ProcessRequest from '@src/models/process_request';
 import Util from '@src/util';
 import { Request, Response } from 'express';
@@ -34,6 +35,20 @@ export default class {
                 status: Status.SUCCESS,
                 data: util.inspect(dom)
             });
+        });
+    }
+
+    @ProcessRequest.Get('/word_count')
+    public async wordCount(_req: Request, res: Response) {
+        const filePath = path.join(__dirname, '../../assets/');
+        const watcher = new Watcher(filePath, res);
+
+        const wordCounts = await watcher.wordCount();
+
+        res.send({
+            status: Status.SUCCESS,
+            data: wordCounts,
+            success: true
         });
     }
 }

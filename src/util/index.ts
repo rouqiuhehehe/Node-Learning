@@ -1,9 +1,9 @@
+import events from 'events';
 import { Response } from 'express';
-import { Status } from '../config/server_config';
-import variableTypes from './variable_type';
 import fs from 'fs';
 import path from 'path';
-import events from 'events';
+import { Status } from '../config/server_config';
+import variableTypes from './variable_type';
 
 const channel = new events.EventEmitter();
 
@@ -12,8 +12,11 @@ export default class Util {
     public static variableTypes = variableTypes;
     public static hadError<T extends Error>(err: T, res?: Response) {
         if (res) {
-            res.statusCode = Status.REJECT_REQUEST;
-            res.send(err.message);
+            res.status(Status.SERVER_ERROR).send({
+                status: 500,
+                success: false,
+                message: err.message
+            });
         } else {
             throw new Error(err.message);
         }
@@ -27,5 +30,13 @@ export default class Util {
                 fn.call(null, data);
             }
         });
+    }
+
+    public static successSend(data: unknown) {
+        return {
+            status: Status.SUCCESS,
+            data,
+            success: true
+        };
     }
 }

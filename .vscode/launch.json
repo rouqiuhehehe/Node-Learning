@@ -8,7 +8,7 @@
             "name": "TS-node-lauch",
             "type": "node",
             "request": "launch",
-            "args": ["${relativeFile}"],
+            "args": ["${workspaceFolder}/src/app.ts"],
             "runtimeArgs": [
                 "-r",
                 "${workspaceFolder}/node_modules/ts-node/register",

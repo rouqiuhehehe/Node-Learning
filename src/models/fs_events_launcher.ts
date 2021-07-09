@@ -1,12 +1,18 @@
+import Util from '@util';
 import events from 'events';
+import { Response } from 'express';
 import fs from 'fs';
+import iconv from 'iconv-lite';
+import path from 'path';
 
 export default class extends events.EventEmitter {
-    public constructor(private watchDir: string) {
+    private wordCounts: Record<string, number> = {};
+
+    public constructor(private watchDir: string, private res?: Response) {
         super();
     }
 
-    public start() {
+    public startWatchFile() {
         fs.watch(
             this.watchDir,
             {
@@ -18,14 +24,63 @@ export default class extends events.EventEmitter {
         );
     }
 
-    // private watch() {
-    //     fs.readdir(this.watchDir, (err, files) => {
-    //         if (err) {
-    //             Util.hadError(err);
-    //         }
-    //         for (const item of files) {
-    //             this.emit('process', item);
-    //         }
-    //     });
-    // }
+    public wordCount() {
+        return new Promise((resolve) => {
+            fs.stat(this.watchDir, (err, data) => {
+                if (err) {
+                    Util.hadError(err, this.res);
+                }
+                if (data.isDirectory()) {
+                    fs.readdir(this.watchDir, (err, files) => {
+                        const promiseArr: Promise<boolean>[] = [];
+                        if (err) {
+                            Util.hadError(err, this.res);
+                        }
+                        files.forEach((v) => {
+                            const extname = path.extname(v);
+                            if (extname !== '.jpg') {
+                                promiseArr.push(this.wordCountByFile(v));
+                            }
+                        });
+
+                        Promise.all(promiseArr).then(() => {
+                            resolve(this.wordCounts);
+                        });
+                    });
+                } else if (data.isFile()) {
+                    this.wordCountByFile().then(() => {
+                        resolve(this.wordCounts);
+                    });
+                }
+            });
+        });
+    }
+
+    private wordCountByFile(filename?: string): Promise<boolean> {
+        return new Promise((resolve) => {
+            fs.readFile(this.watchDir + (filename ?? ''), (err, data) => {
+                if (err) {
+                    Util.hadError(err, this.res);
+                }
+
+                const str = iconv.decode(data, 'gbk');
+                this.countWordInFile(str);
+                resolve(true);
+            });
+        });
+    }
+
+    private countWordInFile(data: string) {
+        data.toString()
+            .toLowerCase()
+            .split(/\s+/)
+            .sort()
+            .forEach((v) => {
+                this.addWordCount(v);
+            });
+    }
+
+    private addWordCount(v: string) {
+        this.wordCounts[v] = this.wordCounts[v] ? this.wordCounts[v] + 1 : 1;
+    }
 }

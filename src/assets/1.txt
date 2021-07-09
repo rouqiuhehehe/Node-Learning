@@ -6,3 +6,11 @@ gsaasggs
 ag
 add¶©µ¥
 ´ó
+
+
+CREATE TABLE IF NOT EXISTS `articles`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `title` VARCHAR(20) NOT NULL DEFAULT '',
+   `content` VARCHAR(200) NOT NULL  DEFAULT '',
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;

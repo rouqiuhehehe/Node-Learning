@@ -1,6 +1,6 @@
 import Util from '@util';
-import { DomHandler, Parser } from 'htmlparser2';
 import { Node } from 'domhandler';
+import { DomHandler, Parser } from 'htmlparser2';
 
 export default class {
     public constructor(private fileUrl: string) {}

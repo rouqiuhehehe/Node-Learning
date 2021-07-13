@@ -5,7 +5,7 @@
     "main": "app.js",
     "scripts": {
         "serve": "ts-node -r tsconfig-paths/register src/app.ts",
-        "dev": "ts-node-dev -r tsconfig-paths/register src/app.ts",
+        "dev": "ts-node-dev --trace-warnings -r tsconfig-paths/register src/app.ts",
         "dist": "tsc"
     },
     "author": "",
@@ -17,6 +17,7 @@
         "express": "^4.17.1",
         "htmlparser2": "^6.1.0",
         "iconv-lite": "^0.4.24",
+        "joi": "^17.4.1",
         "mysql": "^2.18.1",
         "prettier": "^2.3.1",
         "reflect-metadata": "^0.1.13",

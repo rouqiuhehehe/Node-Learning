@@ -13,7 +13,7 @@ export default class Util {
     public static hadError<T extends Error>(err: T, res?: Response) {
         if (res) {
             res.status(Status.SERVER_ERROR).send({
-                status: 500,
+                status: Status.SERVER_ERROR,
                 success: false,
                 message: err.message
             });
@@ -37,6 +37,14 @@ export default class Util {
             status: Status.SUCCESS,
             data,
             success: true
+        };
+    }
+
+    public static errorSend<T extends Error>(err: T) {
+        return {
+            status: Status.SERVER_ERROR,
+            success: false,
+            message: err.message
         };
     }
 }

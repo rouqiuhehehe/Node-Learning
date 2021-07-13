@@ -8,5 +8,6 @@ export const enum Status {
     USE_LAST_RESOURCE = 304,
     REJECT_REQUEST = 403,
     SERVER_NOT_FOUNT = 404,
-    SERVER_ERROR = 500
+    SERVER_ERROR = 500,
+    UNKONW_ERROR = 1001
 }

@@ -1,10 +1,23 @@
 import net from 'net';
+import { Listen } from './config/server_config';
 import Socket from './interface/socket';
 
-const socket = new Socket();
+class SocketServer extends Socket {
+    public socketer: net.Server;
+    public constructor(
+        protected clients: Record<string, net.Socket> = {},
+        protected subScripts: Record<string, (id: string, message: string) => void> = {}
+    ) {
+        super(clients, subScripts);
+        this.socketer = net.createServer((client) => {
+            super.init(client);
+        });
+        this.listen();
+    }
 
-const socketServer = net.createServer((client) => {
-    socket.init(client);
-});
+    private listen() {
+        this.socketer.listen(Listen.SOCKET_PORT);
+    }
+}
 
-export default socketServer;
+export default new SocketServer();

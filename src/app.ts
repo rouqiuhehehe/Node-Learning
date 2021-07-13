@@ -1,10 +1,10 @@
 import path from 'path';
-import { Listen } from './config/server_config';
 import './interface';
+import middleware from './middleware';
 import Watcher from './models/fs_events_launcher';
 import async from './models/serial_parallel';
 import app from './server';
-import socketServer from './socket';
+import './socket';
 
 // 监听文件夹文件变化
 const watcher = new Watcher(path.join(__dirname, './assets'));
@@ -42,5 +42,5 @@ async.serialSerise([
     }
 ]);
 
-socketServer.listen(Listen.SOCKET_PORT);
-app.listen(Listen.PORT);
+// 错误中间件放最后
+app.use(middleware.errorMiddleware);

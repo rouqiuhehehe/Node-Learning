@@ -3,13 +3,13 @@ import Util from '../../util';
 
 export default class Socket {
     public constructor(
-        private clients: Record<string, net.Socket> = {},
-        private subScripts: Record<string, (id: string, message: string) => void> = {}
+        protected clients: Record<string, net.Socket> = {},
+        protected subScripts: Record<string, (id: string, message: string) => void> = {}
     ) {
         this.channelBind();
     }
 
-    public init(client: net.Socket) {
+    protected init(client: net.Socket) {
         const id = `${client.remoteAddress}_${client.remotePort}`;
         console.log(id);
 

@@ -1,8 +1,26 @@
 import express from 'express';
+import { Listen } from './config/server_config';
 
-const app = express();
+class App {
+    public app: express.Application;
+    public constructor() {
+        this.app = express();
+        this.config();
+        this.listen();
+    }
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+    public middleware() {
+        // this.app.use(middleware.errorMiddleware);
+    }
 
-export default app;
+    private config() {
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: false }));
+    }
+
+    private listen() {
+        this.app.listen(Listen.PORT);
+    }
+}
+
+export default new App().app;

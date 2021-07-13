@@ -1,9 +1,12 @@
 import { ErrorMsg } from '@src/config/error';
 import { Status } from '@src/config/server_config';
 import Arctiles from '@src/models/arctiles';
+import HttpError from '@src/models/httpError';
 import process_request from '@src/models/process_request';
 import Util from '@util';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import Joi from 'joi';
+import { MysqlError } from 'mysql';
 
 export default class {
     @process_request.Get('/arctiles')
@@ -24,7 +27,7 @@ export default class {
         res.send(Util.successSend(data));
     }
 
-    @process_request.Post('/arctiles/:id')
+    @process_request.Post('/arctiles/delete/:id')
     public async deleteArctile(req: Request, res: Response) {
         const id = req.params.id;
         const data = await Arctiles.delete(id);
@@ -36,15 +39,33 @@ export default class {
         }
     }
 
-    @process_request.Post('/arctiles/:id')
-    public async insertArctile(req: Request, res: Response) {
-        const id = req.params.id;
-        const data = await Arctiles.delete(id);
+    @process_request.Use('/arctiles/insert')
+    public insertArctileCheck(req: Request, _res: Response, next: NextFunction) {
+        const schema = Joi.object({
+            title: Joi.string().required(),
+            content: Joi.string().required()
+        });
 
-        if (data) {
-            res.send(Util.successSend(true));
+        const { error } = schema.validate(req.body);
+
+        if (this.isValidationError(error)) {
+            return next(new HttpError(Status.SERVER_ERROR, error.details[0].message));
         } else {
-            Util.hadError(new ReferenceError(ErrorMsg.AFFECTEDROWS_ERROR), res);
+            next();
         }
+    }
+
+    @process_request.Post('/arctiles/insert')
+    public async insertArctile(req: Request, res: Response, next: NextFunction) {
+        try {
+            await Arctiles.insert(req.body);
+            res.send(Util.successSend(true));
+        } catch (err) {
+            next(new HttpError(Status.SERVER_ERROR, (err as MysqlError).sqlMessage));
+        }
+    }
+
+    private isValidationError(err?: Joi.ValidationError): err is Joi.ValidationError {
+        return err !== undefined;
     }
 }

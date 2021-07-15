@@ -1,16 +1,18 @@
 import express from 'express';
 import { Listen } from './config/server_config';
+import middleware from './middleware';
 
 class App {
     public app: express.Application;
     public constructor() {
         this.app = express();
         this.config();
+        this.middleware();
         this.listen();
     }
 
     public middleware() {
-        // this.app.use(middleware.errorMiddleware);
+        this.app.use(middleware.logger(['method', 'url', 'query']));
     }
 
     private config() {

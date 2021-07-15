@@ -26,9 +26,9 @@
         "moduleResolution": "Node",
         "baseUrl": ".",
         "paths": {
-            "@srcTypes/*": ["src/types/*"],
-            "@util": ["src/util/index"],
-            "@src/*": ["src/*"]
+            "@srcTypes/*": ["src/types/*", "dist/types/*"],
+            "@util": ["src/util/index", "dist/util/index"],
+            "@src/*": ["src/*", "dist/*"]
         }
     },
     "exclude": ["node_modules", "dist"],

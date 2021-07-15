@@ -26,7 +26,7 @@
         "moduleResolution": "Node",
         "baseUrl": ".",
         "paths": {
-            "@srcTypes/*": ["src/types/*", "dist/types/*"],
+            "@types/*": ["src/types/*", "dist/types/*"],
             "@util": ["src/util/index", "dist/util/index"],
             "@src/*": ["src/*", "dist/*"]
         }

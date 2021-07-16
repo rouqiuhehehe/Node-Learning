@@ -1,4 +1,3 @@
-import { ErrorMsg } from '@src/config/error';
 import { Status } from '@src/config/server_config';
 import Arctiles from '@src/models/arctiles';
 import HttpError from '@src/models/httpError';
@@ -28,14 +27,13 @@ export default class {
     }
 
     @process_request.Post('/arctiles/delete/:id')
-    public async deleteArctile(req: Request, res: Response) {
+    public async deleteArctile(req: Request, res: Response, next: NextFunction) {
         const id = req.params.id;
-        const data = await Arctiles.delete(id);
-
-        if (data) {
+        try {
+            const data = await Arctiles.delete(id);
             res.send(Util.successSend(true));
-        } else {
-            Util.hadError(new ReferenceError(ErrorMsg.AFFECTEDROWS_ERROR), res);
+        } catch (err) {
+            next(new HttpError(Status.SERVER_ERROR, (err as MysqlError).sqlMessage, err));
         }
     }
 

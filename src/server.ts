@@ -1,4 +1,5 @@
 import express from 'express';
+import logger from 'morgan';
 import { Listen } from './config/server_config';
 import middleware from './middleware';
 
@@ -12,7 +13,8 @@ class App {
     }
 
     public middleware() {
-        this.app.use(middleware.logger(['method', 'url', 'query']));
+        this.app.use(logger('dev'));
+        this.app.use(middleware.logger(['method', 'url', 'query', 'body']));
     }
 
     private config() {

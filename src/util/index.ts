@@ -1,3 +1,5 @@
+import { ErrorMsg } from '@src/config/error';
+import HttpError from '@src/models/httpError';
 import events from 'events';
 import { Response } from 'express';
 import fs from 'fs';
@@ -10,22 +12,34 @@ const channel = new events.EventEmitter();
 export default class Util {
     public static channel = channel;
     public static variableTypes = variableTypes;
-    public static hadError<T extends Error>(err: T, res?: Response) {
-        if (res) {
-            res.status(Status.SERVER_ERROR).send({
-                status: Status.SERVER_ERROR,
-                success: false,
-                message: err.message
-            });
+    public static hadError<T extends Error>(err: HttpError<T>, res?: Response) {
+        if (process.env.NODE_ENV === 'development') {
+            if (res) {
+                res.status(err.status).send({
+                    status: err.status,
+                    success: false,
+                    message: err.message
+                });
+            } else {
+                throw new Error(err.message);
+            }
         } else {
-            throw new Error(err.message);
+            if (res) {
+                res.status(err.status).send({
+                    status: err.status,
+                    success: false,
+                    message: ErrorMsg.SERVER_ERROR
+                });
+            } else {
+                console.log('err', err.message);
+            }
         }
     }
 
     public static readFile(fileName: string, fn: (data: string | Buffer) => void, encoding = 'utf-8') {
         fs.readFile(path.join(__dirname, '../', fileName), encoding, (err, data) => {
             if (err) {
-                Util.hadError(err);
+                Util.hadError(new HttpError(Status.SERVER_ERROR, err.message, err));
             } else {
                 fn.call(null, data);
             }

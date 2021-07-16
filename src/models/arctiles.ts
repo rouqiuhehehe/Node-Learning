@@ -1,5 +1,5 @@
 import { OkPacket } from 'mysql';
-import * as db from './db';
+import * as db from '../bin/db';
 
 interface ArctilesData {
     title: string;

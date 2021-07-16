@@ -1,3 +1,5 @@
+import { Status } from '@src/config/server_config';
+import HttpError from '@src/models/httpError';
 import Util from '@util';
 import { Node } from 'domhandler';
 import { DomHandler, Parser } from 'htmlparser2';
@@ -9,7 +11,7 @@ export default class {
         Util.readFile(this.fileUrl, (data) => {
             const handler = new DomHandler((err, dom) => {
                 if (err) {
-                    Util.hadError(err);
+                    Util.hadError(new HttpError(Status.SERVER_ERROR, err.message, err));
                 }
                 fn(dom);
             });

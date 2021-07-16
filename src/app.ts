@@ -10,14 +10,13 @@ import './socket';
 const watcher = new Watcher(path.join(__dirname, './assets'));
 watcher.on('fileChange', (eventname, filename) => {
     console.log(eventname, filename);
-    // fs.rename(dirJoin('./assets/' + file), dirJoin('./assets/' + 're-' + file), (err) => {
-    //     if (err) {
-    //         Util.hadError(err);
-    //     }
-    // });
+    const fileExtension = path.extname(filename);
+    if (eventname === 'change' && fileExtension !== '.vue') {
+        watcher.copyFile(filename, '.vue');
+    }
 });
 
-watcher.startWatchFile();
+// watcher.startWatchFile();
 
 // 串行多函数
 async.serialSerise([

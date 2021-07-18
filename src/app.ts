@@ -7,7 +7,7 @@ import app from './server';
 import './socket';
 
 // 监听文件夹文件变化
-const watcher = new Watcher(path.join(__dirname, './assets'));
+const watcher = new Watcher(__dirname);
 watcher.on('fileChange', (eventname, filename) => {
     console.log(eventname, filename);
     const fileExtension = path.extname(filename);

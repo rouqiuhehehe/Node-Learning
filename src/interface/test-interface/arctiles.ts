@@ -30,7 +30,7 @@ export default class {
     public async deleteArctile(req: Request, res: Response, next: NextFunction) {
         const id = req.params.id;
         try {
-            const data = await Arctiles.delete(id);
+            await Arctiles.delete(id);
             res.send(Util.successSend(true));
         } catch (err) {
             next(new HttpError(Status.SERVER_ERROR, (err as MysqlError).sqlMessage, err));

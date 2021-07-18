@@ -8,6 +8,7 @@ class App {
     public constructor() {
         this.app = express();
         this.config();
+        this.set();
         this.middleware();
         this.listen();
     }
@@ -15,6 +16,11 @@ class App {
     public middleware() {
         this.app.use(logger('dev'));
         this.app.use(middleware.logger(['method', 'url', 'query', 'body']));
+    }
+
+    private set() {
+        this.app.set('views', __dirname + '/views');
+        this.app.set('view engine', 'ejs');
     }
 
     private config() {

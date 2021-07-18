@@ -2,7 +2,7 @@ import { Status } from '@src/config/server_config';
 import Watcher from '@src/models/fs_events_launcher';
 import ProcessRequest from '@src/models/process_request';
 import Util from '@src/util';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import util from 'util';
 import Ssr from '../ssr';

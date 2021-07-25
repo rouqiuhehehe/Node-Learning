@@ -1,7 +1,6 @@
 import { Middleware } from '@src/types/middleware_type';
 import app from '../server';
 import Util from '../util';
-
 export default class extends Util {
     public static Get(url: string, ...callback: Middleware[]) {
         return (target: Object, _name: string | symbol, descriptor: PropertyDescriptor) => {

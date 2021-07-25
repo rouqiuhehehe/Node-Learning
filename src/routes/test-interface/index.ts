@@ -1,16 +1,16 @@
 import { Status } from '@src/config/server_config';
 import Watcher from '@src/models/fs_events_launcher';
-import ProcessRequest from '@src/models/process_request';
+import { default as ProcessRequest, default as process_request } from '@src/models/process_request';
 import Util from '@src/util';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import path from 'path';
 import util from 'util';
-import Ssr from '../ssr';
+import Ssr from '../../models/ssr';
 
 export default class {
     @ProcessRequest.Get('/')
     public getHome(_req: Request, res: Response) {
-        res.send('hello world!');
+        res.render('index', { title: 'hello world!', name: 'hello world!' });
     }
 
     @ProcessRequest.Get('/logo')
@@ -50,5 +50,10 @@ export default class {
             data: wordCounts,
             success: true
         });
+    }
+
+    @process_request.Get('/404')
+    public notfound(_req: Request, res: Response) {
+        res.render('404');
     }
 }

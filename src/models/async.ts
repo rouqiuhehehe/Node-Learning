@@ -1,7 +1,8 @@
 import Util from '../util';
 
+type CallbackType = [...((next: () => void) => void)[], () => void];
 export default class extends Util {
-    public static serialSerise(callbacks: [...((next: () => void) => void)[], () => void]) {
+    public static serialSerise(callbacks: CallbackType) {
         const len = callbacks.length;
         let i = 0;
 

@@ -10,8 +10,9 @@
             "request": "launch",
             "args": ["${workspaceFolder}/src/app.ts"],
             "runtimeArgs": [
+                "--nolazy",
                 "-r",
-                "${workspaceFolder}/node_modules/ts-node/register",
+                "${workspaceFolder}/test/requireConfig.js",
                 "-r",
                 "${workspaceFolder}/node_modules/tsconfig-paths/register"
             ],
@@ -30,7 +31,8 @@
             "type": "node",
             "request": "attach",
             "restart": true,
-            "processId": "${command:PickProcess}"
+            "processId": "${command:PickProcess}",
+            "skipFiles": ["<node_internals>/**"]
         }
     ]
 }

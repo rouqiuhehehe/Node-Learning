@@ -1,6 +1,6 @@
 import net from 'net';
 import { Listen } from './config/server_config';
-import Socket from './interface/socket';
+import Socket from './models/socket';
 
 class SocketServer extends Socket {
     public socketer: net.Server;

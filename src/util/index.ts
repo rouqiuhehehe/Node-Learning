@@ -36,6 +36,18 @@ export default class Util {
         }
     }
 
+    public static getCmdParams() {
+        const params = process.argv.splice(2);
+        const paramsObj: Record<string, string> = {};
+        for (const item of params) {
+            const format = item.slice(2);
+            const paramsArr = format.split('=');
+            paramsObj[paramsArr[0]] = paramsArr[1];
+        }
+
+        return paramsObj;
+    }
+
     public static readFile(fileName: string, fn: (data: string | Buffer) => void, encoding = 'utf-8') {
         fs.readFile(path.join(__dirname, '../', fileName), encoding, (err, data) => {
             if (err) {

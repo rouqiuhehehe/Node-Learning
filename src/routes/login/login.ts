@@ -1,33 +1,17 @@
 import { Status } from '@src/config/server_config';
+import LoginMiddware from '@src/middleware/login';
 import HttpError from '@src/models/httpError';
 import process_request from '@src/models/process_request';
 import User from '@src/models/user';
 import { NextFunction, Request, Response } from 'express';
-import Joi from 'joi';
 
+@process_request.autoBind
 export default class Login {
-    private static loginUserCheck(req: Request, res: Response, next: NextFunction) {
-        const schema = Joi.object({
-            // tslint:disable-next-line:no-magic-numbers
-            username: Joi.string().required().min(4).max(20),
-            // tslint:disable-next-line:no-magic-numbers
-            password: Joi.string().required().min(6).max(16)
-        });
-
-        const { error } = schema.validate(req.body);
-
-        if (error) {
-            res.error(error.message);
-            res.redirect('back');
-        } else {
-            next();
-        }
-    }
+    // private static
 
     @process_request.Get('/login')
     public renderLoginPage(_req: Request, res: Response, next: NextFunction) {
         const title = 'Login';
-
         try {
             res.render('login', { title });
         } catch (e) {
@@ -35,7 +19,7 @@ export default class Login {
         }
     }
 
-    @process_request.Post('/login', Login.loginUserCheck)
+    @process_request.Post('/login', LoginMiddware.loginUserCheck)
     public async loginUser(req: Request, res: Response) {
         const { username, password } = req.body;
 

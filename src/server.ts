@@ -2,13 +2,12 @@ import Util from '@util';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import session from 'express-session';
-import logger from 'morgan';
 import path from 'path';
 import { Secret } from './config/secret';
 import { Listen, Status } from './config/server_config';
 import middleware from './middleware';
 import HttpError from './models/httpError';
-import Routes from './routes';
+import Routes from './models/routes';
 
 class App {
     public app: express.Application;
@@ -26,13 +25,15 @@ class App {
     }
 
     public middleware() {
-        this.app.use(logger('dev'));
         const keys = Object.keys(middleware);
 
         for (const key of keys) {
             if (Object.prototype.hasOwnProperty.call(middleware, key)) {
-                if (key === 'logger') {
-                    this.app.use(middleware.logger(['method', 'url', 'query', 'body', 'session']));
+                if (key === 'morgan') {
+                    const morgan = Object.getOwnPropertyDescriptor(middleware, key)?.value;
+                    const logger = new morgan(path.join(__dirname, '../log/info'));
+                    this.app.use(logger.useLogger());
+
                     continue;
                 }
                 if (key === 'errorMiddleware' || key === 'notFound') {
@@ -54,7 +55,7 @@ class App {
 
     private errorMiddleWare() {
         middleware.notFound(this.app.use.bind(this.app));
-        this.app.use(middleware.errorMiddleware);
+        this.app.use(middleware.errorMiddleware(path.join(__dirname, '../log/error')));
     }
 
     private set() {

@@ -1,29 +1,12 @@
 import { Status } from '@src/config/server_config';
 import { RegisterError } from '@src/config/user_error';
+import LoginMiddware from '@src/middleware/login';
 import HttpError from '@src/models/httpError';
 import process_request from '@src/models/process_request';
 import User from '@src/models/user';
 import { NextFunction, Request, Response } from 'express';
-import Joi from 'joi';
-
 export default class Register {
-    public static addUserMiddleware(req: Request, res: Response, next: NextFunction) {
-        const schema = Joi.object({
-            // tslint:disable-next-line:no-magic-numbers
-            username: Joi.string().required().min(4).max(20),
-            // tslint:disable-next-line:no-magic-numbers
-            password: Joi.string().required().min(6).max(16)
-        });
-
-        const { error } = schema.validate(req.body);
-
-        if (error) {
-            res.error(error.message);
-            res.redirect('back');
-        } else {
-            next();
-        }
-    }
+    // public static
 
     @process_request.Get('/register')
     public renderRegisterPage(_req: Request, res: Response, next: NextFunction) {
@@ -36,7 +19,7 @@ export default class Register {
         }
     }
 
-    @process_request.Post('/register', Register.addUserMiddleware)
+    @process_request.Post('/register', LoginMiddware.addUserMiddleware)
     public async addUser(req: Request, res: Response, next: NextFunction) {
         const { username, password } = req.body;
 

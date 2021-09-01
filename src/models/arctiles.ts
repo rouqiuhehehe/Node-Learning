@@ -1,5 +1,5 @@
 import { OkPacket } from 'mysql';
-import * as db from '../bin/db';
+import db from '../bin/db';
 
 interface ArctilesData {
     title: string;
@@ -7,19 +7,23 @@ interface ArctilesData {
 }
 
 export default class Arctiles {
-    public static async all() {
-        return await db.asyncQuery('select * from articles');
+    private db = new db();
+
+    public async all() {
+        return await this.db.asyncQuery('select * from articles');
     }
 
-    public static async find(id: string) {
-        return await db.asyncQuery('select * from articles where `id` = ?', [id]);
+    public async find(id: string) {
+        return await this.db.asyncQuery('select * from articles where `id` = ?', [id]);
     }
 
-    public static async insert(data: ArctilesData) {
-        const result = (await db.asyncQuery('insert into articles (`title`, `content`) values (?,?)', [
-            data.title,
-            data.content
-        ])) as OkPacket;
+    public async insert(data: ArctilesData) {
+        const result = (
+            await this.db.asyncQuery<OkPacket>('insert into articles (`title`, `content`) values (?,?)', [
+                data.title,
+                data.content
+            ])
+        ).result;
 
         if (result.affectedRows === 1) {
             return true;
@@ -28,8 +32,8 @@ export default class Arctiles {
         }
     }
 
-    public static async delete(id: string) {
-        const result = (await db.asyncQuery('delete from articles where `id` = ?', [id])) as OkPacket;
+    public async delete(id: string) {
+        const result = (await this.db.asyncQuery<OkPacket>('delete from articles where `id` = ?', [id])).result;
 
         if (result.affectedRows === 1) {
             return true;

@@ -1,9 +1,9 @@
 import net from 'net';
-import { Listen } from '../../config/server_config';
+import { Listen } from '../../../config/server_config';
 
 const tcpClient = new net.Socket();
 
-tcpClient.connect(Listen.SOCKET_PORT, '127.0.0.1', () => {
+tcpClient.connect(Listen.TCP_SOCKET_PORT, '127.0.0.1', () => {
     tcpClient.write('this is tcp client by Node.js'); // 服务器向客户端发送消息
 });
 

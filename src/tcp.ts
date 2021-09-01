@@ -1,6 +1,6 @@
 import net from 'net';
 import { Listen } from './config/server_config';
-import Socket from './models/socket';
+import Socket from './models/socket/tcp';
 
 class SocketServer extends Socket {
     public socketer: net.Server;
@@ -16,7 +16,7 @@ class SocketServer extends Socket {
     }
 
     private listen() {
-        this.socketer.listen(Listen.SOCKET_PORT);
+        this.socketer.listen(Listen.TCP_SOCKET_PORT);
     }
 }
 

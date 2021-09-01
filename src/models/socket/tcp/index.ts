@@ -1,5 +1,5 @@
 import net from 'net';
-import Util from '../../util';
+import Util from '../../../util';
 
 export default class Socket {
     public constructor(
@@ -12,7 +12,9 @@ export default class Socket {
     protected init(client: net.Socket) {
         const id = `${client.remoteAddress}_${client.remotePort}`;
         console.log(id);
-
+        client.on('data', (data) => {
+            console.log(data.toString());
+        });
         Util.channel.emit('join', id, client);
         this.listenData(id, client);
     }
@@ -24,6 +26,8 @@ export default class Socket {
     private channelBind() {
         Util.channel.on('join', this.join.bind(this));
         Util.channel.on('leave', (id) => {
+            console.log(id, 'leave');
+
             if (this.subScripts[id]) {
                 Util.channel.removeListener('broadcast', this.subScripts[id]);
                 Reflect.deleteProperty(this.subScripts, id);

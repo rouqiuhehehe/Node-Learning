@@ -1,3 +1,3 @@
-export const enum Secret {
+export enum Secret {
     COOKIE_SECRET = 'psychosocial'
 }

@@ -1,3 +1,4 @@
+import db from '@src/bin/db';
 import { Status } from '@src/config/server_config';
 import Watcher from '@src/models/fs_events_launcher';
 import { default as ProcessRequest, default as process_request } from '@src/models/process_request';
@@ -7,9 +8,12 @@ import path from 'path';
 import util from 'util';
 import Ssr from '../../models/ssr';
 
+const sql = new db();
 export default class {
     @ProcessRequest.Get('/')
-    public getHome(_req: Request, res: Response) {
+    public async getHome(_req: Request, res: Response) {
+        await sql.asyncQuery('select * from articles');
+
         res.render('index', { title: 'hello world!', name: 'hello world!' });
     }
 
@@ -55,5 +59,10 @@ export default class {
     @process_request.Get('/404')
     public notfound(_req: Request, res: Response) {
         res.render('404');
+    }
+
+    @process_request.Get('/websocket')
+    public webSocket(_req: Request, res: Response) {
+        res.render('websocket');
     }
 }

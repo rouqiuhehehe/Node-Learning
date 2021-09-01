@@ -1,9 +1,13 @@
-enum dbConfig {
+const enum dbConfig {
     HOST = 'localhost',
     USER = 'root',
     PASSWORD = 'jianv4as',
-    DATABASE = 'Node_Learned',
+    DATABASE = 'Node_Learning',
     MULTIPLESTATEMENTS = 'true'
+}
+
+const enum dbPoolConfig {
+    CONNECTIONLIMIT = 100
 }
 
 export default {
@@ -11,5 +15,6 @@ export default {
     user: dbConfig.USER,
     password: dbConfig.PASSWORD,
     database: dbConfig.DATABASE,
-    multiplestatements: dbConfig.MULTIPLESTATEMENTS
+    multiplestatements: dbConfig.MULTIPLESTATEMENTS,
+    connectionLimit: dbPoolConfig.CONNECTIONLIMIT
 };

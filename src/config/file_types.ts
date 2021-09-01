@@ -1,4 +1,4 @@
-export const enum FileTypes {
+export enum FileTypes {
     CSS = 'text/css',
     GIF = 'image/gif',
     HTML = 'text/html',

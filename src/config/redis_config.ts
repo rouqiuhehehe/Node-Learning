@@ -1,3 +1,3 @@
-export const enum RedisConfig {
+export enum RedisConfig {
     POIT = 6379
 }

@@ -1,9 +1,11 @@
-export const enum Listen {
+export enum Listen {
     PORT = 8000,
-    SOCKET_PORT = 8888
+    TCP_SOCKET_PORT = 8888,
+    UDP_SOCKET_PORT = 41234,
+    WEB_SOCKET_PORT = 12310
 }
 
-export const enum Status {
+export enum Status {
     SUCCESS = 200,
     USE_LAST_RESOURCE = 304,
     REJECT_REQUEST = 403,

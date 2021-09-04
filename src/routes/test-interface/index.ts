@@ -12,8 +12,6 @@ const sql = new db();
 export default class {
     @ProcessRequest.Get('/')
     public async getHome(_req: Request, res: Response) {
-        await sql.asyncQuery('select * from articles');
-
         res.render('index', { title: 'hello world!', name: 'hello world!' });
     }
 

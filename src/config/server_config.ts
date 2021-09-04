@@ -2,7 +2,9 @@ export enum Listen {
     PORT = 8000,
     TCP_SOCKET_PORT = 8888,
     UDP_SOCKET_PORT = 41234,
-    WEB_SOCKET_PORT = 12310
+    WEB_SOCKET_PORT = 12310,
+    TLS_SOCKET_PORT = 33223,
+    HTTPS = 8443
 }
 
 export enum Status {

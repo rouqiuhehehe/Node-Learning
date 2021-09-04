@@ -2,6 +2,7 @@ import Util from '@util';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import session from 'express-session';
+import http from 'http';
 import path from 'path';
 import { Secret } from './config/secret';
 import { Listen, Status } from './config/server_config';
@@ -78,7 +79,7 @@ class App {
     }
 
     private listen() {
-        this.app.listen(Listen.PORT);
+        http.createServer(this.app).listen(Listen.PORT);
     }
 }
 export default new App().app;

@@ -1,4 +1,5 @@
 import easyMonitor from 'easy-monitor';
+import 'reflect-metadata';
 import './https';
 import './server';
 import './tcp';
@@ -10,6 +11,30 @@ import './websocket';
 if (process.env.NODE_RUN === 'debugger') {
     easyMonitor('dsc');
 }
+
+// const classDescriptor = (target: Function) => {
+//     console.log(target.name, 1);
+// };
+
+// const methodDescriptor = (target: Object, propertyKey: string | symbol, _descriptor: PropertyDescriptor) => {
+//     process.nextTick(() => {
+//         console.log(target.constructor.name, propertyKey, 2);
+
+//         console.log(Reflect.getMetadata('a', target.constructor), 220);
+//     });
+// };
+@Reflect.metadata('a', [])
+class A {}
+
+class B extends A {
+    public b() {
+        //
+    }
+}
+
+console.log(Reflect.getMetadata('a', B) === Reflect.getOwnMetadata('a', A));
+
+// console.log(Reflect.getMetadata('b', B.prototype, 'b'), 70);
 
 console.log(process.pid);
 // (async () => {

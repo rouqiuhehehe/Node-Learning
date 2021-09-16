@@ -1,9 +1,10 @@
+import autoBind from '@src/descriptor/Autobind';
 import Util from '@util';
 import { Request, Response } from 'express';
 import FileStreamRotator from 'file-stream-rotator';
 import morgan from 'morgan';
 import path from 'path';
-
+@autoBind
 export default class Morgan {
     public constructor(private dirPath: string) {}
 

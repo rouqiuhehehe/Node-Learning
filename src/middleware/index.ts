@@ -2,7 +2,6 @@ import NotFound from './404';
 import Auth from './auth';
 import ErrorMiddleware from './errorMiddleware';
 import Message from './message';
-import Morgan from './morgan';
 import User from './user';
 
 class Middleware {
@@ -13,9 +12,9 @@ class Middleware {
         public message = Message.messageMiddleware,
         public user = User,
         public auth = Auth.authMiddleware,
-        public notFound = NotFound.redirect,
-        public morgan = Morgan
-    ) {}
+        public notFound = NotFound.redirect
+    ) // public morgan = Morgan
+    {}
 }
 
 export default new Middleware();

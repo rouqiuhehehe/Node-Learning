@@ -19,19 +19,38 @@
         "noImplicitThis": true,
         "declaration": true,
         "declarationDir": "./dist/type",
-        "lib": ["es2017", "DOM", "DOM.Iterable"],
+        "lib": [
+            "es2017",
+            "DOM",
+            "DOM.Iterable"
+        ],
         "emitDecoratorMetadata": true,
         "downlevelIteration": true,
         "experimentalDecorators": true,
         "preserveSymlinks": true,
         "moduleResolution": "Node",
-        "typeRoots": ["node_modules/@types", "types/*.d.ts"],
+        "typeRoots": [
+            "node_modules/@types",
+            "types/*.d.ts"
+        ],
         "baseUrl": ".",
         "paths": {
-            "@util": ["src/util/index", "dist/util/index"],
-            "@src/*": ["src/*", "dist/*"]
+            "@util": [
+                "src/util/index",
+                "dist/util/index"
+            ],
+            "@src/*": [
+                "src/*",
+                "dist/*"
+            ]
         }
     },
-    "exclude": ["node_modules", "*.test.ts"],
-    "include": ["src/**/*.ts", "types/*"]
+    "exclude": [
+        "node_modules",
+        "*.test.ts"
+    ],
+    "include": [
+        "src/**/*.ts",
+        "types/*"
+    ]
 }

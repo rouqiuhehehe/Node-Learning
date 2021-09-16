@@ -15,7 +15,7 @@ export default class UdpServer {
         this.server.on('listening', () => {
             const address = this.server.address();
 
-            console.log('server listening ' + address.address + ':' + address.port);
+            console.log('UDP server listening ' + address.address + ':' + address.port);
         });
 
         this.server.on('error', (e) => {

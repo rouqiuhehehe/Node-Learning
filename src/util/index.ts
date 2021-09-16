@@ -1,4 +1,5 @@
 import { ErrorMsg } from '@src/config/error';
+import { ControllerMetadata } from '@src/descriptor/controller';
 import HttpError from '@src/models/httpError';
 import events from 'events';
 import { Request, Response } from 'express';
@@ -7,6 +8,11 @@ import iconv from 'iconv-lite';
 import path from 'path';
 import { Listen, Status } from '../config/server_config';
 import variableTypes from './variable_type';
+
+export enum DescriptorKey {
+    CLASS = 'classDescriptor',
+    METHOD = 'methodDescriptor'
+}
 
 const channel = new events.EventEmitter();
 
@@ -33,6 +39,39 @@ export default class Util {
                 });
             } else {
                 console.log('err', err.message);
+            }
+        }
+    }
+
+    public static middlewareDescriptor(
+        target: Object,
+        propertyKey: string | symbol | undefined,
+        descriptor: PropertyDescriptor | undefined,
+        fn: (v: DescriptorKey) => void
+    ) {
+        if (propertyKey && descriptor && fn) {
+            // 如果是子路由，需要当前路由
+            // 放入下一次时间循环执行，让父类装饰器先执行
+            process.nextTick(() => {
+                const hasRoutes = Reflect.hasMetadata(ControllerMetadata.ROUTES, target);
+
+                if (hasRoutes) {
+                    fn(DescriptorKey.METHOD);
+                } else {
+                    throw new HttpError(
+                        Status.SERVER_ERROR,
+                        'routes is undefined, is maybe that the descriptor in the wrong order'
+                    );
+                }
+            });
+        } else {
+            // 如果是父级别路由，只需判断是否有homePath
+            const hasHomePath = Reflect.hasMetadata(ControllerMetadata.HOMEPATH, target);
+
+            if (hasHomePath) {
+                fn(DescriptorKey.CLASS);
+            } else {
+                throw new HttpError(Status.SERVER_ERROR, (target as Function).name + ' does not has homePath');
             }
         }
     }

@@ -1,3 +1,4 @@
+import { scanController } from '@src/models/routes';
 import Util from '@util';
 import cookieParser from 'cookie-parser';
 import express from 'express';
@@ -8,7 +9,7 @@ import { Secret } from './config/secret';
 import { Listen, Status } from './config/server_config';
 import middleware from './middleware';
 import HttpError from './models/httpError';
-import Routes from './models/routes';
+import Routes from './models/oldRoutes';
 
 class App {
     public app: express.Application;
@@ -20,8 +21,16 @@ class App {
         this.middleware();
 
         this.listenRoutes().then(() => {
-            this.errorMiddleWare();
-            this.listen();
+            scanController(path.join(__dirname, './routes'), this.app)
+                .then(() => {
+                    // console.log(this.app._router.stack);
+
+                    this.errorMiddleWare();
+                    this.listen();
+                })
+                .catch((e: any) => {
+                    console.log(e);
+                });
         });
     }
 
@@ -34,7 +43,6 @@ class App {
                     const morgan = Object.getOwnPropertyDescriptor(middleware, key)?.value;
                     const logger = new morgan(path.join(__dirname, '../log/info'));
                     this.app.use(logger.useLogger());
-
                     continue;
                 }
                 if (key === 'errorMiddleware' || key === 'notFound') {
@@ -49,7 +57,7 @@ class App {
     private async listenRoutes() {
         try {
             await Routes.watchRoutes();
-        } catch (e) {
+        } catch (e: any) {
             Util.hadError(new HttpError(Status.SERVER_ERROR, e.message ?? e));
         }
     }

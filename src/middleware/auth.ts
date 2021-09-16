@@ -27,7 +27,7 @@ export default class Auth {
             try {
                 await User.validateToken(req);
                 next();
-            } catch (e) {
+            } catch (e: any) {
                 res.error(e.message);
                 res.redirect('/login');
             }

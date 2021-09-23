@@ -1,24 +1,13 @@
 import { ControllerMetadata, Route } from '@src/descriptor/controller';
-import { findFatherClass } from '@src/descriptor/log';
+import { DefaultMiddleWareType, findFatherClass, MiddleWareArray } from '@src/descriptor/middlewareHandle';
 import { Middleware } from '@src/types/middleware_type';
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import fsPromise from 'fs/promises';
 import path from 'path';
 
 // tslint:disable: no-unused-expression
-
-export enum DefaultMiddleWareType {
-    LOG = 'log',
-    CUSTOM = 'custom'
-}
-
-export interface MiddleWareArray {
-    target: any;
-    type: DefaultMiddleWareType;
-    fn: (req: Request, res: Response, next: NextFunction) => void;
-}
-
-export const scanController = (dirPath: string, route: express.Application) => {
+const moduleArr: Promise<any>[] = [];
+const loadTs = (dirPath: string): Promise<any[]> => {
     return new Promise(async (resole, reject) => {
         try {
             // 检测目录是否存在
@@ -32,7 +21,7 @@ export const scanController = (dirPath: string, route: express.Application) => {
                     const dirStat = await fsPromise.stat(curPath);
 
                     if (dirStat.isDirectory()) {
-                        await scanController(curPath, route);
+                        await loadTs(curPath);
                         continue;
                     }
 
@@ -41,109 +30,131 @@ export const scanController = (dirPath: string, route: express.Application) => {
                     }
 
                     try {
-                        const module = await import(`${curPath}`);
-                        const controller = module.default ?? module;
-
-                        if (controller && controller.prototype) {
-                            // 路由懒加载，先加载中间件
-                            process.nextTick(() => {
-                                // 判断是否存在basepath 以及路由，如果没有默认理解为不是路由类
-                                const isController = Reflect.hasMetadata(ControllerMetadata.BASEPATH, controller);
-                                // 导入时，方法装饰器挂载的元数据在prototype上
-                                const hasRoutes = Reflect.hasMetadata(ControllerMetadata.ROUTES, controller.prototype);
-                                const hasHomePath = Reflect.hasMetadata(ControllerMetadata.HOMEPATH, controller);
-                                const hasStaticRoutes = Reflect.hasMetadata(ControllerMetadata.ROUTES, controller);
-                                const basePath = Reflect.getMetadata(ControllerMetadata.BASEPATH, controller);
-                                const homePath = Reflect.getMetadata(ControllerMetadata.HOMEPATH, controller);
-
-                                if (Reflect.hasMetadata('middleware', controller)) {
-                                    const ownMiddleware = Reflect.getOwnMetadata('middleware', controller);
-                                    const middleware = Reflect.getMetadata(
-                                        'middleware',
-                                        controller
-                                    ) as MiddleWareArray[];
-
-                                    // 判断装饰器是否挂载在父级路由上
-                                    if (!ownMiddleware || ownMiddleware !== middleware) {
-                                        const customMiddleware: Middleware[] = [];
-
-                                        middleware
-                                            .filter((v) => {
-                                                if (v.type === DefaultMiddleWareType.CUSTOM) {
-                                                    customMiddleware.push(v.fn);
-                                                    return false;
-                                                }
-                                                return true;
-                                            })
-                                            .forEach((v) => {
-                                                // 找到父级挂载的中间件
-                                                const target = findFatherClass(controller, (i) => {
-                                                    if (i === v.target) {
-                                                        return true;
-                                                    }
-                                                    return false;
-                                                });
-
-                                                if (target) {
-                                                    const basePath = Reflect.getMetadata(
-                                                        ControllerMetadata.BASEPATH,
-                                                        target
-                                                    );
-                                                    const homePath = Reflect.getMetadata(
-                                                        ControllerMetadata.HOMEPATH,
-                                                        target
-                                                    );
-                                                    const realPath = path.posix.join(homePath, basePath ?? '');
-
-                                                    Reflect.deleteMetadata('middleware', target);
-                                                    route.use(realPath, v.fn);
-                                                } else {
-                                                    throw new Error('unkonw Error');
-                                                }
-                                            });
-
-                                        customMiddleware.length &&
-                                            route.use(path.posix.join(homePath, basePath ?? ''), ...customMiddleware);
-                                    } else {
-                                        route.use(
-                                            path.posix.join(homePath, basePath ?? ''),
-                                            ...(
-                                                (Reflect.getOwnMetadata('middleware', controller) ??
-                                                    []) as MiddleWareArray[]
-                                            ).map((v) => v.fn)
-                                        );
-                                    }
-                                }
-
-                                if (isController && hasHomePath && (hasRoutes || hasStaticRoutes)) {
-                                    const routes = [
-                                        ...(Reflect.getOwnMetadata(ControllerMetadata.ROUTES, controller.prototype) ??
-                                            []),
-                                        ...(Reflect.getOwnMetadata(ControllerMetadata.ROUTES, controller) ?? [])
-                                    ] as Route[];
-
-                                    routes.forEach((v) => {
-                                        // 做字符串兼容
-                                        const curPath = path.posix
-                                            .join(homePath, basePath, v.path)
-                                            .replace(new RegExp('/$'), '');
-                                        const controllerInstance = new controller();
-
-                                        const callback = controllerInstance[v.propertyKey].bind(controllerInstance);
-
-                                        route[v.method](curPath, ...(v.middleWare ?? []), callback);
-                                    });
-                                }
-                            });
-                        }
+                        const module = import(`${curPath}`);
+                        moduleArr.push(module);
                     } catch (error) {
                         reject(error);
                     }
                 }
-                resole(route);
+                resole(moduleArr);
             } catch (error) {
                 reject(error);
             }
+        } catch (error) {
+            reject(path + ' does not exist');
+        }
+    });
+};
+
+export const scanController = (dirPath: string, route: express.Application) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const resultArr = await loadTs(dirPath);
+            Promise.all(resultArr).then((moduleArr) => {
+                moduleArr.forEach((v) => {
+                    const controller = v.default || v;
+
+                    if (controller && controller.prototype) {
+                        // 路由懒加载，等待放入下一次事件循环的中间件先完成
+                        process.nextTick(() => {
+                            // 判断是否存在basepath 以及路由，如果没有默认理解为不是路由类
+                            const isController = Reflect.hasMetadata(ControllerMetadata.BASEPATH, controller);
+                            // 导入时，方法装饰器挂载的元数据在prototype上
+                            const hasRoutes = Reflect.hasMetadata(ControllerMetadata.ROUTES, controller.prototype);
+                            const hasHomePath = Reflect.hasMetadata(ControllerMetadata.HOMEPATH, controller);
+                            const hasStaticRoutes = Reflect.hasMetadata(ControllerMetadata.ROUTES, controller);
+                            const basePath = Reflect.getMetadata(ControllerMetadata.BASEPATH, controller);
+                            const homePath = Reflect.getMetadata(ControllerMetadata.HOMEPATH, controller);
+
+                            if (Reflect.hasMetadata('middleware', controller)) {
+                                const ownMiddleware = Reflect.getOwnMetadata('middleware', controller);
+                                const middleware = Reflect.getMetadata('middleware', controller) as MiddleWareArray[];
+
+                                // 判断装饰器是否挂载在父级路由上
+                                if (!ownMiddleware || ownMiddleware !== middleware) {
+                                    // 当中间件挂载在父级的时候
+                                    const customMiddleware: Middleware[] = [];
+
+                                    middleware
+                                        .filter((v) => {
+                                            // 过滤出所有的默认中间件
+                                            if (v.type === DefaultMiddleWareType.CUSTOM) {
+                                                // 自定义中间件过滤掉
+                                                customMiddleware.push(v.fn);
+                                                return false;
+                                            }
+                                            return true;
+                                        })
+                                        .forEach((v) => {
+                                            // 找到挂载中间件的父级
+                                            const target = findFatherClass(controller, (i) => {
+                                                if (i === v.target) {
+                                                    return true;
+                                                }
+                                                return false;
+                                            });
+
+                                            if (target) {
+                                                // 如果存在，将中间件挂载在父级路由下，并删除父级类挂载的元数据
+                                                const basePath = Reflect.getMetadata(
+                                                    ControllerMetadata.BASEPATH,
+                                                    target
+                                                );
+                                                const homePath = Reflect.getMetadata(
+                                                    ControllerMetadata.HOMEPATH,
+                                                    target
+                                                );
+                                                const realPath = path.posix.join(homePath, basePath ?? '');
+
+                                                Reflect.deleteMetadata('middleware', target);
+                                                route.use(realPath, v.fn);
+                                            } else {
+                                                // 不存在则异常错误
+                                                throw new Error('unkonw Error');
+                                            }
+                                        });
+
+                                    // 如果存在自定义中间件,则把自定义中间件挂载在当前类的路由下
+                                    customMiddleware.length &&
+                                        route.use(path.posix.join(homePath, basePath ?? ''), ...customMiddleware);
+                                } else {
+                                    // 如果不在父级路由上，则直接挂载在当前路由下
+                                    route.use(
+                                        path.posix.join(homePath, basePath ?? ''),
+                                        ...(
+                                            (Reflect.getOwnMetadata('middleware', controller) ??
+                                                []) as MiddleWareArray[]
+                                        ).map((v) => v.fn)
+                                    );
+                                }
+                            }
+
+                            if (isController && hasHomePath && (hasRoutes || hasStaticRoutes)) {
+                                const routes = [
+                                    ...(Reflect.getOwnMetadata(ControllerMetadata.ROUTES, controller.prototype) ?? []),
+                                    ...(Reflect.getOwnMetadata(ControllerMetadata.ROUTES, controller) ?? [])
+                                ] as Route[];
+
+                                routes.forEach((v) => {
+                                    // 做字符串兼容
+                                    const curPath = path.posix
+                                        .join(homePath, basePath, v.path)
+                                        .replace(new RegExp('/$'), '');
+                                    const controllerInstance = new controller();
+
+                                    const callback = controllerInstance[v.propertyKey].bind(controllerInstance);
+
+                                    route[v.method](curPath, ...(v.middleWare ?? []), callback);
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            process.nextTick(() => {
+                resolve(true);
+            });
         } catch (error) {
             reject(path + ' does not exist');
         }

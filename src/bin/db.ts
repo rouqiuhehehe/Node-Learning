@@ -59,7 +59,6 @@ export default class extends events.EventEmitter {
                     const result = await this.asyncQuery(sql, values);
                     this.emit(url, result);
                     this.status = 'ready';
-                    console.log(10);
                 }
             } catch (e) {
                 this.emit(url, e);

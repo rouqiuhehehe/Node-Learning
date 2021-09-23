@@ -51,13 +51,14 @@ export default class Util {
     ) {
         if (propertyKey && descriptor && fn) {
             // 如果是子路由，需要当前路由
-            // 放入下一次时间循环执行，让父类装饰器先执行
+            // 放入下一次事件循环执行，让父类装饰器先执行
             process.nextTick(() => {
                 const hasRoutes = Reflect.hasMetadata(ControllerMetadata.ROUTES, target);
 
                 if (hasRoutes) {
                     fn(DescriptorKey.METHOD);
                 } else {
+                    // 需要先定义路由
                     throw new HttpError(
                         Status.SERVER_ERROR,
                         'routes is undefined, is maybe that the descriptor in the wrong order'

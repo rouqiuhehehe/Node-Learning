@@ -1,13 +1,13 @@
 import autoBind from '@src/descriptor/Autobind';
 import { Controller, Get } from '@src/descriptor/controller';
+import Login from '@src/descriptor/login';
 import { Request, Response } from 'express';
 import admin from '..';
 
-// @Log()
 @Controller('/student')
 export default class extends admin {
     @autoBind
-    // @Log()
+    @Login
     @Get('/')
     public indexPage(_req: Request, res: Response) {
         res.send(`<h1>${this.homePageRender()}</h1>`);

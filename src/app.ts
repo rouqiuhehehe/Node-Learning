@@ -23,18 +23,21 @@ if (process.env.NODE_RUN === 'debugger') {
 //         console.log(Reflect.getMetadata('a', target.constructor), 220);
 //     });
 // };
-@Reflect.metadata('a', [])
-class A {}
 
-class B extends A {
-    public b() {
-        //
-    }
-}
+// const c = (target: Object, _name: string, _des: PropertyDescriptor) => {
+//     console.log(Reflect.getMetadata('a', target.constructor), 70);
+// };
+// @Reflect.metadata('a', [])
+// class A {}
 
-console.log(Reflect.getMetadata('a', B) === Reflect.getOwnMetadata('a', A));
+// class B extends A {
+//     @c
+//     public b() {
+//         //
+//     }
+// }
 
-// console.log(Reflect.getMetadata('b', B.prototype, 'b'), 70);
+// console.log(Reflect.getMetadata('a', B) === Reflect.getOwnMetadata('a', A));
 
 console.log(process.pid);
 // (async () => {

@@ -10,13 +10,11 @@
             const websocket = new WebSocket('ws://127.0.0.1:12310/abc');
 
             websocket.onopen = () => {
-                console.log(777);
                 websocket.send('dsc');
             };
 
             websocket.onmessage = (e) => {
                 const { data } = e;
-                console.log(data, 8);
             };
 
             websocket.onclose = () => {

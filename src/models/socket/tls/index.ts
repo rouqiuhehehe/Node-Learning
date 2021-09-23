@@ -16,7 +16,6 @@ export default class {
 
         this.tlsServer = tls.createServer(option, (socket) => {
             // tslint:disable-next-line: no-magic-numbers
-            console.log(socket.authorized, 888);
             socket.write('welcome!\n');
             socket.setEncoding('utf8');
 

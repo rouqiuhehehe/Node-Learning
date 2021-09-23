@@ -19,5 +19,5 @@ const steam = tls.connect(Listen.TLS_SOCKET_PORT, option, () => {
 steam.setEncoding('utf8');
 
 steam.on('data', (data) => {
-    console.log(data, 10);
+    console.log(data, 'tls client on data');
 });

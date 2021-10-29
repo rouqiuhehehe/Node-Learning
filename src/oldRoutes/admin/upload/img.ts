@@ -3,7 +3,6 @@ import HttpError from '@src/models/httpError';
 import process_request from '@src/models/process_request';
 import Upload from '@src/models/upload';
 import { NextFunction, Request, Response } from 'express';
-import fsPromise from 'fs/promises';
 
 export default class {
     @process_request.Get('/admin/upload/img')
@@ -16,20 +15,17 @@ export default class {
     }
 
     @process_request.Post('/admin/upload/img')
-    public async uploadImg(req: Request, res: Response, _next: NextFunction) {
-        try {
-            await fsPromise.access('uploads');
-        } catch (e) {
-            await fsPromise.mkdir('uploads');
-        }
+    public async uploadImg(req: Request, res: Response) {
         new Upload('uploads', [
             {
                 fileId: 'img',
-                rule: '.png|.jpeg|.bmp|.svg|.jpg'
+                rule: '.png|.jpeg|.bmp|.svg|.jpg|.jfif',
+                storageAddress: 'img'
             },
             {
                 fileId: 'txt',
-                rule: 'txt'
+                rule: 'txt',
+                storageAddress: 'desc'
             }
         ]).fields([
             {
@@ -41,6 +37,11 @@ export default class {
                 maxCount: 1
             }
         ])(req, res, (err) => {
+            const { user } = req;
+            const { title, desc } = req.body;
+
+            // const {img: [{path: imgPath}], txt: [{path: txtPath}]} = req.files
+
             if (err) {
                 res.error(err.message);
 

@@ -34,7 +34,7 @@ export default class {
         try {
             await entry.save();
             res.redirect('/ejs/entries');
-        } catch (e) {
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e));
         }
     }

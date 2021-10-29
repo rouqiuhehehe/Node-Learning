@@ -4,7 +4,6 @@ import LoginMiddware from '@src/middleware/login';
 import HttpError from '@src/models/httpError';
 import process_request from '@src/models/process_request';
 import User from '@src/models/user';
-import crypto from 'crypto';
 import { NextFunction, Request, Response } from 'express';
 @autoBind
 export default class Login {
@@ -14,7 +13,7 @@ export default class Login {
     public renderLoginPage(_req: Request, res: Response, next: NextFunction) {
         const title = 'Login';
         try {
-            res.render('login', { title, crypto });
+            res.render('login', { title });
         } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e));
         }
@@ -29,6 +28,7 @@ export default class Login {
                 username,
                 password
             });
+
             req.session.authorization = 'Bearer ' + (await User.issueToken(req.session.uid));
 
             if (process.env.NODE_ENV === 'development') {

@@ -67,8 +67,8 @@ export default class extends events.EventEmitter {
             const data = await promises.readFile(filePath, { encoding: 'utf-8', flag: 'r' });
             await promises.rm(realFilePath, { force: true });
             await promises.writeFile(realFilePath, data, { encoding: 'utf-8' });
-        } catch (e) {
-            Util.hadError(new HttpError(Status.SERVER_ERROR, e as string));
+        } catch (e: any) {
+            Util.hadError(new HttpError(Status.SERVER_ERROR, e));
         }
     }
 

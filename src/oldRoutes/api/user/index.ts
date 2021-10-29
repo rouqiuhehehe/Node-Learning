@@ -14,7 +14,7 @@ export default class {
             }
             const userInfo = await User.getById(+id);
             res.json(userInfo);
-        } catch (e) {
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e.message, e));
         }
     }

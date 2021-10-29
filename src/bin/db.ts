@@ -22,11 +22,11 @@ export default class extends events.EventEmitter {
         return new Promise((resolve, reject) => {
             this.pool.getConnection((err, connection) => {
                 if (err) {
-                    reject(err);
+                    return reject(err);
                 } else {
                     connection.query(sql, values, (err, result, _fields) => {
                         if (err) {
-                            reject(err);
+                            return reject(err);
                         }
                         resolve(result);
                     });
@@ -39,7 +39,7 @@ export default class extends events.EventEmitter {
     /**
      * 加锁处理多请求
      */
-    public asyncQuerySock<T>(req: Request, sql: string, values?: []): Promise<Result<T>> {
+    public asyncQueryBySock<T>(req: Request, sql: string, values?: unknown[]): Promise<Result<T>> {
         const url = Util.getNoParamsUrl(req);
         return new Promise(async (resolve, reject) => {
             this.once(url, (res) => {

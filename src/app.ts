@@ -1,4 +1,4 @@
-import easyMonitor from 'easy-monitor';
+// import easyMonitor from 'easy-monitor';
 import 'reflect-metadata';
 import './child_process';
 import './https';
@@ -9,9 +9,9 @@ import './udp';
 import './websocket';
 // import Async from './util/async';
 
-if (process.env.NODE_RUN === 'debugger') {
-    easyMonitor('dsc');
-}
+// if (process.env.NODE_RUN === 'debugger') {
+//     easyMonitor('dsc');
+// }
 
 console.log(process.pid);
 // (async () => {

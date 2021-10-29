@@ -82,10 +82,22 @@ export default class User {
 
     public static validateToken(req: Request) {
         return new Promise((resolve, reject) => {
-            if (!req.session.uid) {
-                reject(new HttpError(Status.SERVER_ERROR, Issue.TOKEN_IS_NOT_FIND));
+            let token: string | undefined;
+            if (process.env.NODE_ENV === 'development') {
+                if (!req.session.uid || !req.signedCookies.uid) {
+                    reject(new HttpError(Status.SERVER_ERROR, Issue.TOKEN_IS_NOT_FIND));
+                }
+
+                token =
+                    req.session.authorization?.replace('Bearer ', '') ??
+                    req.signedCookies.authorization?.replace('Bearer ', '');
+            } else {
+                if (!req.session.uid) {
+                    reject(new HttpError(Status.SERVER_ERROR, Issue.TOKEN_IS_NOT_FIND));
+                }
+                token = req.session.authorization?.replace('Bearer ', '');
             }
-            const token = req.session.authorization?.replace('Bearer ', '');
+
             if (!token) {
                 reject(new HttpError(Status.SERVER_ERROR, Issue.TOKEN_IS_NOT_FIND));
             } else {
@@ -97,7 +109,7 @@ export default class User {
                         const info = userInfo as UserInfo;
                         if (info && info.token === token) {
                             try {
-                                const decoded = await Jwt.vailToken(token, info.secret!);
+                                const decoded = await Jwt.vailToken(token!, info.secret!);
                                 resolve(decoded);
                             } catch (e: any) {
                                 reject(new HttpError(Status.SERVER_ERROR, e.message, e));

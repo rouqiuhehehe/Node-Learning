@@ -1,11 +1,12 @@
 import { Status } from '@src/config/server_config';
+import autoBind from '@src/descriptor/autobind';
 import LoginMiddware from '@src/middleware/login';
 import HttpError from '@src/models/httpError';
 import process_request from '@src/models/process_request';
 import User from '@src/models/user';
+import crypto from 'crypto';
 import { NextFunction, Request, Response } from 'express';
-
-@process_request.autoBind
+@autoBind
 export default class Login {
     // private static
 
@@ -13,8 +14,8 @@ export default class Login {
     public renderLoginPage(_req: Request, res: Response, next: NextFunction) {
         const title = 'Login';
         try {
-            res.render('login', { title });
-        } catch (e) {
+            res.render('login', { title, crypto });
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e));
         }
     }
@@ -29,8 +30,23 @@ export default class Login {
                 password
             });
             req.session.authorization = 'Bearer ' + (await User.issueToken(req.session.uid));
+
+            if (process.env.NODE_ENV === 'development') {
+                res.cookie('authorization', req.session.authorization, {
+                    // tslint:disable-next-line: no-magic-numbers
+                    maxAge: 1000 * 60 * 60 * 4,
+                    signed: true,
+                    httpOnly: true
+                });
+                res.cookie('uid', req.session.uid, {
+                    // tslint:disable-next-line: no-magic-numbers
+                    maxAge: 1000 * 60 * 60 * 4,
+                    signed: true,
+                    httpOnly: true
+                });
+            }
             res.redirect(`/ejs/entries?title=${username}&name=${username}`);
-        } catch (e) {
+        } catch (e: any) {
             res.error(e.message ?? e);
             res.redirect('back');
         }

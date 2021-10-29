@@ -1,8 +1,8 @@
-import process_request from '@src/models/process_request';
+import autoBind from '@src/descriptor/autobind';
 import { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
 
-@process_request.autoBind
+@autoBind
 class LoginMiddware {
     public loginUserCheck(req: Request, res: Response, next: NextFunction) {
         const schema = Joi.object({

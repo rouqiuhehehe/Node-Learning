@@ -10,7 +10,7 @@ export default class {
     public uploadImgRender(_req: Request, res: Response, next: NextFunction) {
         try {
             res.render('upload-img');
-        } catch (e) {
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e.message, e));
         }
     }

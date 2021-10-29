@@ -14,6 +14,12 @@ export enum DescriptorKey {
     METHOD = 'methodDescriptor'
 }
 
+export enum DescriptorType {
+    DATA = 'data',
+    ACCESSOR = 'accessor',
+    UNDEFINED = 'undefined'
+}
+
 const channel = new events.EventEmitter();
 
 export default class Util {
@@ -152,6 +158,58 @@ export default class Util {
     public static getNoParamsUrl(req: Request) {
         const urlObj = new URL(req.url, 'http:localhost:' + Listen.PORT);
         return urlObj.pathname;
+    }
+
+    public static getFunctionTypeByDescriptor(descriptor: PropertyDescriptor) {
+        if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
+            return DescriptorType.DATA;
+        } else if (
+            Object.prototype.hasOwnProperty.call(descriptor, 'get') ||
+            Object.prototype.hasOwnProperty.call(descriptor, 'set')
+        ) {
+            return DescriptorType.ACCESSOR;
+        } else {
+            return DescriptorType.UNDEFINED;
+        }
+    }
+
+    public static getFunctionByDescriptor(descriptor: PropertyDescriptor) {
+        const fnType = Util.getFunctionTypeByDescriptor(descriptor);
+
+        let type: DescriptorType;
+        let fn;
+        switch (fnType) {
+            case DescriptorType.DATA:
+                if (typeof descriptor.value !== 'function') {
+                    throw new TypeError(descriptor.value + ' is not a function');
+                }
+                type = DescriptorType.DATA;
+                fn = descriptor.value;
+                break;
+            case DescriptorType.ACCESSOR:
+                if (typeof descriptor.set !== 'function') {
+                    throw new TypeError(descriptor.set!.name + ' is not a function');
+                }
+                if (typeof descriptor.get !== 'function') {
+                    throw new TypeError(descriptor.get!.name + ' is not a function');
+                }
+                type = DescriptorType.ACCESSOR;
+                fn = {
+                    get: descriptor.get,
+                    set: descriptor.set
+                };
+                break;
+            case DescriptorType.UNDEFINED:
+                return {
+                    type: DescriptorType.UNDEFINED,
+                    fn: DescriptorType.UNDEFINED
+                };
+        }
+
+        return {
+            type,
+            fn
+        };
     }
 
     public static dataByReadStream(

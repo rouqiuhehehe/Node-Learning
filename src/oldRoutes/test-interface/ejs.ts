@@ -42,7 +42,7 @@ export default class Entries {
                 title: 'Entries',
                 entries
             });
-        } catch (e) {
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e.message));
         }
     }
@@ -68,7 +68,7 @@ export default class Entries {
                     });
                 }
             });
-        } catch (e) {
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e.message, e));
         }
     }

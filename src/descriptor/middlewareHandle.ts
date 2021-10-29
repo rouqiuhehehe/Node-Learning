@@ -4,10 +4,9 @@ import { Status } from '@src/config/server_config';
 import HttpError from '@src/models/httpError';
 import { Middleware } from '@src/types/middleware_type';
 import { NextFunction, Request, Response } from 'express';
-import { ControllerMetadata, Route } from './controller';
+import { ControllerMetadata, Route, RouteMethod } from './controller';
 
 const repeatDefineError = new HttpError(Status.SERVER_ERROR, '父路由定义过的中间件不允许在子路由重复定义');
-let a: Object;
 export enum DefaultMiddleWareType {
     LOG = 'log',
     LOGIN = 'login',
@@ -40,6 +39,9 @@ export const classLogHandler = (target: Function, type: DefaultMiddleWareType, m
             if (middleware.some((v) => v.type === type)) {
                 throw repeatDefineError;
             }
+
+            // 创建自己的中间件
+            Reflect.defineMetadata('middleware', [], target);
         } else {
             // 如果自己有中间件，则通过中间件type找到父级的target，如果存在，则重复，报错
             const father = findFatherClass(target, (v) => {
@@ -55,13 +57,12 @@ export const classLogHandler = (target: Function, type: DefaultMiddleWareType, m
         // 如果没有则创建
         Reflect.defineMetadata('middleware', [], target);
     }
+
     Reflect.getOwnMetadata('middleware', target).push({
         type,
         target,
         fn: middleware
     });
-
-    a = target;
 };
 
 export const methodLogHandler = (
@@ -96,14 +97,43 @@ export const methodLogHandler = (
         }
 
         // 遍历路由数组，找到定义中间件的项，吧中间件push进去
-        routes.forEach((v) => {
-            // tslint:disable-next-line: no-unused-expression
-            v.propertyKey === propertyKey && (v.middleWare ?? (v.middleWare = [])).push(middleware);
-        });
+        const route = routes.find((v) => v.propertyKey === propertyKey);
+        if (route) {
+            (route.middleWare ?? (route.middleWare = [])).push(middleware);
+        } else {
+            throw new RangeError('The route defined by the current middleware was not found');
+        }
     } else {
         throw new HttpError(
             Status.SERVER_ERROR,
             routes + ' is not an array, is maybe that the descriptor in the wrong order'
         );
     }
+};
+
+export const methodMiddleware = (
+    target: Object,
+    propertyKey: string | symbol,
+    middleware: (method: RouteMethod) => Middleware
+) => {
+    // 拿到路由数组，如果不存在直接报错，路由定义需在中间件前
+    // 所有子类装饰器放入下一次事件循环，让父类装饰器先执行
+    process.nextTick(() => {
+        const routes = Reflect.getMetadata(ControllerMetadata.ROUTES, target) as Route[];
+
+        if (routes instanceof Array && routes.length) {
+            // 遍历路由数组，找到定义中间件的项，吧中间件push进去
+            const route = routes.find((v) => v.propertyKey === propertyKey);
+            if (route) {
+                (route.middleWare ?? (route.middleWare = [])).push(middleware(route.method));
+            } else {
+                throw new RangeError('The route defined by the current middleware was not found');
+            }
+        } else {
+            throw new HttpError(
+                Status.SERVER_ERROR,
+                routes + ' is not an array, is maybe that the descriptor in the wrong order'
+            );
+        }
+    });
 };

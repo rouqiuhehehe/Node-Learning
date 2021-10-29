@@ -1,4 +1,5 @@
 import { Status } from '@src/config/server_config';
+import autoBind from '@src/descriptor/autobind';
 import Arctiles from '@src/models/arctiles';
 import HttpError from '@src/models/httpError';
 import process_request from '@src/models/process_request';
@@ -7,6 +8,7 @@ import { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
 import { MysqlError } from 'mysql';
 
+@autoBind
 export default class {
     private arctiles = new Arctiles();
 
@@ -34,7 +36,7 @@ export default class {
         try {
             await this.arctiles.delete(id);
             res.send(Util.successSend(true));
-        } catch (err) {
+        } catch (err: any) {
             next(new HttpError(Status.SERVER_ERROR, (err as MysqlError).sqlMessage, err));
         }
     }

@@ -21,6 +21,7 @@
 <% if (locals.user) { %>
 <div class="menu">
     <span class="name"><%= user.username %> </span>
+    <a href="/admin/student?name=<%= user.username %>  ">admin</a>
     <a href="/ejs/post/view?title=<%= user.username %>&name=<%= user.username %>  ">post</a>
     <a href="javascript:;" class="logout">logout</a>
 </div>
@@ -32,7 +33,7 @@
 <% } %>
 
 <script>
-    document.getElementsByClassName('logout')[0].addEventListener('click', (e) => {
+    document.getElementsByClassName('logout')[0]?.addEventListener('click', (e) => {
         e.preventDefault();
         if (window.confirm('do you want to logout?')) {
             window.location.href = '/logout';

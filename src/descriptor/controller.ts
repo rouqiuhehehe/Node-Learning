@@ -1,6 +1,7 @@
 import { Status } from '@src/config/server_config';
 import HttpError from '@src/models/httpError';
 import { NextFunction, Request, Response } from 'express';
+import 'reflect-metadata';
 
 export enum RouteMethod {
     GET = 'get',

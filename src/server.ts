@@ -11,7 +11,7 @@ import middleware from './middleware';
 import HttpError from './models/httpError';
 import Routes from './models/oldRoutes';
 
-class App {
+export class App {
     public app: express.Application;
 
     public constructor() {
@@ -24,9 +24,9 @@ class App {
             scanController(path.join(__dirname, './routes'), this.app)
                 .then(() => {
                     // console.log(this.app._router.stack);
-
                     this.errorMiddleWare();
-                    this.listen();
+
+                    // this.listen();
                 })
                 .catch((e: any) => {
                     console.log(e);

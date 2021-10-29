@@ -24,14 +24,11 @@ export default class extends events.EventEmitter {
                 if (err) {
                     reject(err);
                 } else {
-                    connection.query(sql, values, (err, result, fields) => {
+                    connection.query(sql, values, (err, result, _fields) => {
                         if (err) {
                             reject(err);
                         }
-                        resolve({
-                            result,
-                            fields
-                        });
+                        resolve(result);
                     });
                 }
                 connection.release();

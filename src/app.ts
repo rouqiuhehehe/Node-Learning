@@ -1,4 +1,4 @@
-import easyMonitor from 'easy-monitor';
+// import easyMonitor from 'easy-monitor';
 import 'reflect-metadata';
 import './https';
 import './server';
@@ -8,9 +8,9 @@ import './udp';
 import './websocket';
 // import Async from './util/async';
 
-if (process.env.NODE_RUN === 'debugger') {
-    easyMonitor('dsc');
-}
+// if (process.env.NODE_RUN === 'debugger') {
+//     easyMonitor('dsc');
+// }
 
 // const classDescriptor = (target: Function) => {
 //     console.log(target.name, 1);

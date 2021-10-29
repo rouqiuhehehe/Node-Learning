@@ -1,25 +1,23 @@
 import { OkPacket } from 'mysql';
-import db from '../bin/db';
+import Db from '../bin/db';
 
 interface ArctilesData {
     title: string;
     content: string;
 }
-
+const db = new Db();
 export default class Arctiles {
-    private db = new db();
-
     public async all() {
-        return await this.db.asyncQuery('select * from articles');
+        return await db.asyncQuery('select * from articles');
     }
 
     public async find(id: string) {
-        return await this.db.asyncQuery('select * from articles where `id` = ?', [id]);
+        return await db.asyncQuery('select * from articles where `id` = ?', [id]);
     }
 
     public async insert(data: ArctilesData) {
         const result = (
-            await this.db.asyncQuery<OkPacket>('insert into articles (`title`, `content`) values (?,?)', [
+            await db.asyncQuery<OkPacket>('insert into articles (`title`, `content`) values (?,?)', [
                 data.title,
                 data.content
             ])
@@ -33,7 +31,7 @@ export default class Arctiles {
     }
 
     public async delete(id: string) {
-        const result = (await this.db.asyncQuery<OkPacket>('delete from articles where `id` = ?', [id])).result;
+        const result = (await db.asyncQuery<OkPacket>('delete from articles where `id` = ?', [id])).result;
 
         if (result.affectedRows === 1) {
             return true;

@@ -6,13 +6,11 @@ import Util from '@util';
 import { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
 import { MysqlError } from 'mysql';
-
+const arctiles = new Arctiles();
 export default class {
-    private arctiles = new Arctiles();
-
     @process_request.Get('/arctiles')
     public async getArctiles(_req: Request, res: Response) {
-        const data = await this.arctiles.all();
+        const data = await arctiles.all();
         res.send({
             status: Status.SUCCESS,
             data,
@@ -23,7 +21,7 @@ export default class {
     @process_request.Get('/arctiles/:id')
     public async getArctile(req: Request, res: Response) {
         const id = req.params.id;
-        const data = await this.arctiles.find(id);
+        const data = await arctiles.find(id);
 
         res.send(Util.successSend(data));
     }
@@ -32,9 +30,9 @@ export default class {
     public async deleteArctile(req: Request, res: Response, next: NextFunction) {
         const id = req.params.id;
         try {
-            await this.arctiles.delete(id);
+            await arctiles.delete(id);
             res.send(Util.successSend(true));
-        } catch (err) {
+        } catch (err: any) {
             next(new HttpError(Status.SERVER_ERROR, (err as MysqlError).sqlMessage, err));
         }
     }
@@ -58,7 +56,7 @@ export default class {
     @process_request.Post('/arctiles/insert')
     public async insertArctile(req: Request, res: Response, next: NextFunction) {
         try {
-            await this.arctiles.insert(req.body);
+            await arctiles.insert(req.body);
             res.send(Util.successSend(true));
         } catch (err) {
             next(new HttpError(Status.SERVER_ERROR, (err as MysqlError).sqlMessage));

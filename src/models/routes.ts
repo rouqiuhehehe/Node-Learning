@@ -50,6 +50,7 @@ export const scanController = (dirPath: string, route: express.Application) => {
     return new Promise(async (resolve, reject) => {
         try {
             const resultArr = await loadTs(dirPath);
+            let i = 0;
             Promise.all(resultArr).then((moduleArr) => {
                 moduleArr.forEach((v) => {
                     const controller = v.default || v;
@@ -147,13 +148,19 @@ export const scanController = (dirPath: string, route: express.Application) => {
                                     route[v.method](curPath, ...(v.middleWare ?? []), callback);
                                 });
                             }
+
+                            i++;
+                            if (i === moduleArr.length) {
+                                resolve(true);
+                            }
                         });
+                    } else {
+                        i++;
+                        if (i === moduleArr.length) {
+                            resolve(true);
+                        }
                     }
                 });
-            });
-
-            process.nextTick(() => {
-                resolve(true);
             });
         } catch (error) {
             reject(path + ' does not exist');

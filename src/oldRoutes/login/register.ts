@@ -14,7 +14,7 @@ export default class Register {
 
         try {
             res.render('register', { title });
-        } catch (e) {
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e));
         }
     }
@@ -36,7 +36,7 @@ export default class Register {
                 await user.save();
                 res.redirect('/login');
             }
-        } catch (e) {
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e));
         }
     }

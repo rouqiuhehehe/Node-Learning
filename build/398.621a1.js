@@ -1,0 +1,1 @@
+"use strict";exports.id=398,exports.ids=[398],exports.modules={2398:(o,e,s)=>{s.r(e),s(1539),s(9714);var t=s(1891),n=s.n(t),r=s(8690),c=s(4300).Buffer.from("潇洒李狗蛋"),i=n().createSocket("udp4");i.on("message",(function(o,e){console.log(o.toString(),e)})),i.send(c,r.Z.UDP_SOCKET_PORT,(function(o,e){o&&console.log(o)}))}};

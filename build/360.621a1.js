@@ -1,0 +1,1 @@
+"use strict";exports.id=360,exports.ids=[360],exports.modules={1360:(o,e,t)=>{t.r(e),t(1539),t(9714);var n=t(1808),c=t.n(n),s=t(8690),i=new(c().Socket);i.connect(s.Z.TCP_SOCKET_PORT,"127.0.0.1",(function(){i.write("this is tcp client by Node.js")})),i.on("data",(function(o){console.log("received: ",o.toString())})),i.on("close",(function(){console.log("closed")}))}};

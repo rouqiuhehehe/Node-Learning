@@ -139,7 +139,7 @@ export default class Util {
         });
     }
 
-    public static readFile(fileName: string, fn: (data: string | Buffer) => void, encoding = 'utf-8') {
+    public static readFile(fileName: string, fn: (data: string | Buffer) => void, encoding: BufferEncoding = 'utf-8') {
         fs.readFile(path.join(__dirname, '../', fileName), encoding, (err, data) => {
             if (err) {
                 Util.hadError(new HttpError(Status.SERVER_ERROR, err.message, err));
@@ -200,5 +200,12 @@ export default class Util {
             success: false,
             message: err.message
         };
+    }
+
+    public static isExtendsHttpError<T extends Error>(err: Error): err is HttpError<T> {
+        if (err instanceof HttpError) {
+            return true;
+        }
+        return false;
     }
 }

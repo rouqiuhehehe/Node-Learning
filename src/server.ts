@@ -49,7 +49,7 @@ class App {
     private async listenRoutes() {
         try {
             await Routes.watchRoutes();
-        } catch (e) {
+        } catch (e: any) {
             Util.hadError(new HttpError(Status.SERVER_ERROR, e.message ?? e));
         }
     }

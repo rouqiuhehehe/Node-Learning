@@ -14,7 +14,7 @@ export default class Login {
         const title = 'Login';
         try {
             res.render('login', { title });
-        } catch (e) {
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e));
         }
     }
@@ -28,9 +28,10 @@ export default class Login {
                 username,
                 password
             });
+
             req.session.authorization = 'Bearer ' + (await User.issueToken(req.session.uid));
             res.redirect(`/ejs/entries?title=${username}&name=${username}`);
-        } catch (e) {
+        } catch (e: any) {
             res.error(e.message ?? e);
             res.redirect('back');
         }

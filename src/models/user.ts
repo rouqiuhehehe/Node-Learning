@@ -99,7 +99,7 @@ export default class User {
                             try {
                                 const decoded = await Jwt.vailToken(token, info.secret!);
                                 resolve(decoded);
-                            } catch (e) {
+                            } catch (e: any) {
                                 reject(new HttpError(Status.SERVER_ERROR, e.message, e));
                             }
                         } else {

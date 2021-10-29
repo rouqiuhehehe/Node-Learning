@@ -10,26 +10,23 @@ export default class {
     public uploadImgRender(_req: Request, res: Response, next: NextFunction) {
         try {
             res.render('upload-img');
-        } catch (e) {
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e.message, e));
         }
     }
 
     @process_request.Post('/admin/upload/img')
-    public async uploadImg(req: Request, res: Response, _next: NextFunction) {
-        try {
-            await fsPromise.access('uploads');
-        } catch (e) {
-            await fsPromise.mkdir('uploads');
-        }
+    public async uploadImg(req: Request, res: Response) {
         new Upload('uploads', [
             {
                 fileId: 'img',
-                rule: '.png|.jpeg|.bmp|.svg|.jpg'
+                rule: '.png|.jpeg|.bmp|.svg|.jpg|.jfif',
+                storageAddress: 'img'
             },
             {
                 fileId: 'txt',
-                rule: 'txt'
+                rule: 'txt',
+                storageAddress: 'desc'
             }
         ]).fields([
             {
@@ -41,6 +38,11 @@ export default class {
                 maxCount: 1
             }
         ])(req, res, (err) => {
+            const { user } = req;
+            const { title, desc } = req.body;
+
+            // const {img: [{path: imgPath}], txt: [{path: txtPath}]} = req.files
+
             if (err) {
                 res.error(err.message);
 

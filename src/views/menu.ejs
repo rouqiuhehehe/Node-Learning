@@ -21,6 +21,8 @@
 <% if (locals.user) { %>
 <div class="menu">
     <span class="name"><%= user.username %> </span>
+    <a href="/arctiles">arctiles</a>
+    <a href="/admin/upload/img">upload</a>
     <a href="/ejs/post/view?title=<%= user.username %>&name=<%= user.username %>  ">post</a>
     <a href="javascript:;" class="logout">logout</a>
 </div>

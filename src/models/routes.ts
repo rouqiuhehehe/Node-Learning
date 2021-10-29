@@ -14,7 +14,7 @@ class Routes {
                 }
 
                 resolve(true);
-            } catch (e) {
+            } catch (e: any) {
                 reject(new HttpError(Status.SERVER_ERROR, e.message ?? e, e));
             }
         });
@@ -46,7 +46,7 @@ class Routes {
                 }
 
                 resolve(true);
-            } catch (e) {
+            } catch (e: any) {
                 reject(new HttpError(Status.SERVER_ERROR, e.message ?? e, e));
             }
         });

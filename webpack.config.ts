@@ -1,7 +1,7 @@
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import fs from 'fs';
-import * as path from 'path';
+import path from 'path';
 import * as webpack from 'webpack';
 // in case you run into any typescript error when configuring `devServer`
 
@@ -50,6 +50,13 @@ const config: webpack.Configuration = {
     },
     module: {
         rules: [
+            {
+                exclude: /.(css|js|html|tsx?)$/,
+                loader: 'file-loader',
+                options: {
+                    emitFile: false
+                }
+            },
             {
                 test: /\.tsx?$/,
                 use: [
@@ -147,6 +154,14 @@ const config: webpack.Configuration = {
                 {
                     from: path.join(__dirname, './src/public'),
                     to: path.join(__dirname, './build/public')
+                },
+                {
+                    from: path.join(__dirname, './src/models/socket/tls/ssl'),
+                    to: path.join(__dirname, './build/ssl')
+                },
+                {
+                    from: path.join(__dirname, './src/models/socket/https/ssl'),
+                    to: path.join(__dirname, './build/ssl')
                 }
             ]
         })

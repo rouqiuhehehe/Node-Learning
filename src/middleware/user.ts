@@ -12,7 +12,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             const user = await User.getById(uid);
             req.user = res.locals.user = user.userInfo;
             next();
-        } catch (e) {
+        } catch (e: any) {
             next(new HttpError(Status.SERVER_ERROR, e.message ?? e));
         }
     }

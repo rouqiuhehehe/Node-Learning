@@ -14,6 +14,7 @@
         "ordered-imports": false,
         "prefer-const": true,
         "no-import-side-effect": false,
-        "no-implicit-dependencies": [true, "dev", ["@src", "@util", "domhandler"]]
+        "no-implicit-dependencies": [true, "dev", ["@src", "@util", "domhandler"]],
+        "no-unused-expression": false
     }
 }

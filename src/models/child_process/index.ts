@@ -23,13 +23,22 @@ export default class ChildProcess {
 
     @autoBind
     protected forkChildProcess() {
-        [0, 0].forEach(() => {
+        let i = 0;
+        const arr = [0, 0];
+        arr.forEach(() => {
             const cp = childProcess.fork(path.join(__dirname, './work.ts'));
 
-            cp.send('tcp', this.server);
-        });
+            cp.on('message', (msg) => {
+                if (msg === 'init') {
+                    cp.send('tcp', this.server);
+                    i++;
 
-        // 发射完成后，关闭主进程tcp服务
-        this.server.close();
+                    if (i === arr.length) {
+                        // 发射完成后，关闭主进程tcp服务
+                        this.server.close();
+                    }
+                }
+            });
+        });
     }
 }

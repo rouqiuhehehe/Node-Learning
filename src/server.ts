@@ -14,7 +14,7 @@ import Routes from './models/oldRoutes';
 export class App {
     public app: express.Application;
 
-    public constructor() {
+    public constructor(cb?: (err?: Error) => void) {
         this.app = express();
         this.config();
         this.set();
@@ -26,10 +26,13 @@ export class App {
                     // console.log(this.app._router.stack);
                     this.errorMiddleWare();
 
+                    cb && cb();
                     // this.listen();
                 })
                 .catch((e: any) => {
                     console.log(e);
+
+                    cb && cb(e);
                 });
         });
     }

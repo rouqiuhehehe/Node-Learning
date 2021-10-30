@@ -7,7 +7,7 @@
     "scripts": {
         "serve": "node -r ./test/requireConfig.js -r tsconfig-paths/register src/app.ts",
         "tsc": "tsc",
-        "dev": "cross-env NODE_ENV=development NODE_RUN=dev ts-node-dev --inspect --files --trace-warnings -r tsconfig-paths/register src/app.ts",
+        "dev": "cross-env NODE_ENV=development NODE_RUN=dev ts-node-dev --inspect=9330 --files --trace-warnings -r tsconfig-paths/register src/app.ts",
         "debugger": "cross-env NODE_ENV=development NODE_RUN=debugger ts-node-dev --expose-gc --trace-warnings --debug --inspect --files -r tsconfig-paths/register src/app.ts",
         "production": "cross-env NODE_ENV=production NODE_RUN=dev ts-node-dev --trace-warnings --files -r tsconfig-paths/register src/app.ts",
         "dist": "del dist && tsc && cross-env NODE_ENV=production node -r tsconfig-paths/register dist/app.js",
